@@ -1,0 +1,132 @@
+
+```{r}
+library(tidyverse)
+library(readxl)
+library(lubridate)
+
+options(scipen = 9999)
+
+```
+
+Reading in the Office for National Statistics data on house prices since 1995
+```{r}
+
+house_prices <- read_xls("hpssadataset9medianpricepaidforadministrativegeographies.xls",
+         sheet = "2a", skip = 6) %>% 
+  # Converting the data from 'wide' to long
+  gather(key = "date", value = "median_price", -1, -2, -3, -4) %>% 
+  # Converting date to a date format using the myd() function from the lubridate package
+  mutate(date = str_replace(date, "Year ending ", "") %>% myd(truncated = 1)) %>% 
+  # Looking at data since 2008
+  filter(date >= dmy("01-01-2008")) %>% 
+  janitor::clean_names() 
+
+# Check we have the same number of time periods for each local authority - we do! 
+house_prices %>% 
+  count(local_authority_name, sort = TRUE)
+
+```
+
+Let's quickly graph the changes to house prices. First, we'll look at absolute values. 
+```{r}
+house_prices %>% 
+  ggplot(aes(date, median_price)) + 
+  geom_line(aes(group = local_authority_name)) + 
+  geom_smooth(se = FALSE)
+
+house_prices %>% 
+  ggplot(aes(date, median_price)) + 
+  geom_line(aes(group = local_authority_name)) + 
+  geom_smooth(se = FALSE) + 
+  scale_y_log10()
+
+```
+
+Now we'll look at relative change. I'll create an index from the begining of our data. 
+```{r}
+house_prices <- house_prices %>% 
+  group_by(local_authority_name) %>% 
+  mutate(median_price_index = (median_price/median_price[date == min(date)])*100) %>% 
+  ungroup()
+
+house_prices %>% 
+  ggplot(aes(date, median_price_index)) + 
+  geom_line(aes(group = local_authority_name), alpha =  0.2) + 
+  geom_smooth(se = FALSE)
+
+house_prices %>% 
+  ggplot(aes(date, median_price_index)) + 
+  geom_line(aes(group = local_authority_name), alpha =  0.2) + 
+  geom_smooth(se = FALSE) + 
+  facet_wrap(~region_country_name)
+
+```
+
+
+```{r}
+# Preparing the data 
+house_prices_kmeans <- house_prices %>% 
+  select(local_authority_name, date, median_price_index) %>% 
+  spread(date, value = median_price_index) %>% 
+  as.data.frame()
+
+hp_rownames <- pull(house_prices_kmeans, local_authority_name)
+
+house_prices_kmeans <- house_prices_kmeans %>% select(-local_authority_name)
+
+rownames(house_prices_kmeans) <- hp_rownames
+
+# Identifying the best number for 'k' 
+set.seed(42)
+
+total_withiness <- map_dbl(1:10,  function(k){
+  model <- kmeans(x = house_prices_kmeans, centers = k)
+  model$tot.withinss
+})
+
+elbow_df <- data.frame(
+  k = 1:10,
+  total_withiness = total_withiness
+)
+
+ggplot(elbow_df, aes(x = k, y = total_withiness)) +
+  geom_line() +
+  scale_x_continuous(breaks = 1:10)
+
+# Let's go with 4 
+model <- kmeans(house_prices_kmeans, centers = 4)
+
+library(broom)
+
+model_results <- augment(model, house_prices_kmeans) %>% 
+  select("local_authority_name" = 1, "cluster" = .cluster) 
+
+house_prices <- inner_join(house_prices, model_results, by = "local_authority_name")
+  
+```
+Looking at the results - both on a graph and on a map 
+```{r}
+
+house_prices %>% 
+  ggplot(aes(date, median_price_index)) + 
+  geom_line(aes(group = local_authority_name, col = cluster)) +
+  facet_wrap(~cluster)
+
+```
+
+```{r}
+
+library(sf)
+library(leaflet)
+
+england_wales_map <- read_sf("Local_Authority_Districts_December_2017_Full_Clipped_Boundaries_in_Great_Britain", 
+        "Local_Authority_Districts_December_2017_Full_Clipped_Boundaries_in_Great_Britain") %>% 
+  select(lad17cd) %>% 
+  semi_join(house_prices, by = c("lad17cd" = "local_authority_code"))
+
+england_wales_map %>% 
+  leaflet() %>% 
+  addPolygons()
+  
+
+```
