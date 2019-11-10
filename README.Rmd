@@ -197,7 +197,7 @@ plot(house_prices_hclust)
 ```
 
 We'll go with four clusters again 
-```{r}
+```{r, message=FALSE}
 hclust_out <- cutree(house_prices_hclust, k = 4) %>% 
   tidy() %>% 
   select("local_authority_name" = 1, "hclust" = 2)
@@ -208,7 +208,7 @@ house_prices <- house_prices %>% inner_join(hclust_out)
 
 ### Visualising the hierarchical clustering results 
 
-```{r}
+```{r, message=FALSE}
 house_prices %>% 
   ggplot(aes(date, median_price_index)) + 
   geom_line(aes(group = local_authority_name, color = factor(hclust))) +

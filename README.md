@@ -75,7 +75,7 @@ house_prices %>%
   labs(x = "", y = "Median house price", title = "Median house prices in local authorities since 2008")
 ```
 
-![](Models-for-EDA---Clustering_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
 
 ``` r
 # Using a logarithmic scale 
@@ -88,7 +88,7 @@ house_prices %>%
        title = "Median House Prices in local authorities since 2008")
 ```
 
-![](Models-for-EDA---Clustering_files/figure-gfm/unnamed-chunk-2-2.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-2-2.png)<!-- -->
 
 The range of house prices across England and Wales is very large, so
 we’ll look at relative change. We’ll create an index that looks at
@@ -109,7 +109,7 @@ house_prices %>%
        title = "Median house prices in local authorities since 2008")
 ```
 
-![](Models-for-EDA---Clustering_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
 
 ``` r
 house_prices %>% 
@@ -121,7 +121,7 @@ house_prices %>%
        title = "Median house prices in local authorities since 2008")
 ```
 
-![](Models-for-EDA---Clustering_files/figure-gfm/unnamed-chunk-3-2.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-3-2.png)<!-- -->
 
 # K-means clustering
 
@@ -161,7 +161,7 @@ ggplot(elbow_df, aes(x = k, y = total_withiness)) +
   scale_x_continuous(breaks = 1:10)
 ```
 
-![](Models-for-EDA---Clustering_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
 
 We’ll go with 4 clusters
 
@@ -190,7 +190,7 @@ house_prices %>%
   facet_wrap(~cluster)
 ```
 
-![](Models-for-EDA---Clustering_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
 Overlaying the clustering onto a map, we can see that the group with the
 largest increases in house prices (group 2) are located in London (with
@@ -200,9 +200,9 @@ South East.
 
 In general, the further a location is from London, the less house prices
 have increased since 2008. It’s worth noting that locations closer to
-London (and those in London) also had higher house prices to start with
-- so prices started higher than they were elsewhere in England and
-Wales, and have grown faster.
+London (and those in London) also had higher house prices to start with.
+In these locations, prices started higher than they were elsewhere in
+England and Wales and have also grown faster.
 
 ``` r
 library(sf)
@@ -226,7 +226,7 @@ leaflet(england_wales_map) %>%
   addLegend(pal = fact_pal, values = ~cluster) 
 ```
 
-![](Models-for-EDA---Clustering_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
 # Hierarchical clustering
 
@@ -251,7 +251,7 @@ house_prices_hclust <- hclust(dist_matrix, method = "complete")
 plot(house_prices_hclust)
 ```
 
-![](Models-for-EDA---Clustering_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
 
 We’ll go with four clusters again
 
@@ -268,8 +268,6 @@ hclust_out <- cutree(house_prices_hclust, k = 4) %>%
 house_prices <- house_prices %>% inner_join(hclust_out)
 ```
 
-    ## Joining, by = "local_authority_name"
-
 ### Visualising the hierarchical clustering results
 
 ``` r
@@ -281,9 +279,7 @@ house_prices %>%
   facet_wrap(~hclust)
 ```
 
-    ## `geom_smooth()` using method = 'gam' and formula 'y ~ s(x, bs = "cs")'
-
-![](Models-for-EDA---Clustering_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
 
 The hierarchical clustering has identify the same trend as the k-means
 clustering - areas in and around London have experienced the largest
@@ -304,4 +300,4 @@ leaflet(england_wales_map) %>%
   addLegend(pal = fact_pal, values = ~hclust) 
 ```
 
-![](Models-for-EDA---Clustering_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
