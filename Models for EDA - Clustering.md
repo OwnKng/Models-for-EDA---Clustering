@@ -200,9 +200,7 @@ South East.
 
 In general, the further a location is from London, the less house prices
 have increased since 2008. It’s worth noting that locations closer to
-London (and those in London) also had higher house prices to start with
-- so prices started higher than they were elsewhere in England and
-Wales, and have grown faster.
+London (and those in London) also had higher house prices to start with - so prices started higher than they were elsewhere in England and Wales, and have grown faster.
 
 ``` r
 library(sf)
