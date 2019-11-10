@@ -1,7 +1,7 @@
 ---
 title: "Models for Exploratory Data Analysis - Clustering"
 date: "Nov-2019"
-output: html_document
+output: rmarkdown::github_document
 ---
 
 This analysis applies two common clustering techniques, k-means clustering and hiercarchical clustering, to data on house prices in England and Wales. It is intended to demonstate that fitting simple models to a dataset can be a highly effective way of quickly identifying trends and generating ideas for further analysis. 
