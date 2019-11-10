@@ -4,7 +4,7 @@ date: "Nov-2019"
 output: rmarkdown::github_document
 ---
 
-This analysis applies two common clustering techniques, k-means clustering and hiercarchical clustering, to data on house prices in England and Wales. It is intended to demonstate that fitting simple models to a dataset can be a highly effective way of quickly identifying trends and generating ideas for further analysis. 
+This analysis applies two common clustering techniques, k-means clustering and hierarchical clustering, to data on house prices in England and Wales. It is intended to demonstrate that fitting simple models to a dataset can be a highly effective way of quickly identifying trends and generating ideas for further analysis. 
 
 More information on this approach can be found here: https://r4ds.had.co.nz/model-building.html 
 
@@ -12,7 +12,7 @@ More information on this approach can be found here: https://r4ds.had.co.nz/mode
 
 Data on median property prices in England and Wales is published quarterly by the Office for National Statistics, using data from the Land Registry. It is available here: https://www.ons.gov.uk/peoplepopulationandcommunity/housing/datasets/medianhousepricefornationalandsubnationalgeographiesquarterlyrollingyearhpssadataset09   
 
-The Excel document contains house prices for different adminstrative geographies of England and Wales, and different types of property. Here, we'll look at median prices for all property types in the c. 350 local authorities in England and Wales.  
+The Excel document contains house prices for different administrative geographies of England and Wales, and different types of property. Here, we'll look at median prices for all property types in the c. 350 local authorities in England and Wales.  
 
 We'll start by reading in the data and do some basic cleaning. 
 
@@ -38,7 +38,7 @@ house_prices
 
 ```
 
-## Visulising changes to house prices
+## Visualising changes to house prices
 
 Let's quickly graph the changes to house prices. First, we'll look at absolute values. 
 ```{r, message=FALSE}
@@ -134,7 +134,7 @@ house_prices <- inner_join(house_prices, model_results, by = "local_authority_na
   
 ```
 
-### Visulising the k-means results 
+### Visualising the k-means results 
 Visualising the house price changes per cluster shows that the k-means clustering has identified areas which have experienced different trajectories of house price growth. 
 
 ```{r}
@@ -174,9 +174,9 @@ leaflet(england_wales_map) %>%
 
 ```
 
-# Hierachical clustering
+# Hierarchical clustering
 
-We'll now use hierachical clustering to spot trends in the house prices data. While this method of clustering is different to k-means, the results should be comparable to the k-means clustering.  
+We'll now use hierarchical clustering to spot trends in the house prices data. While this method of clustering is different to k-means, the results should be comparable to the k-means clustering.  
 
 ```{r, warning=FALSE}
 # Preparing the data 
@@ -206,7 +206,7 @@ house_prices <- house_prices %>% inner_join(hclust_out)
 
 ```
 
-### Visulising the hierachical clustering results 
+### Visualising the hierarchical clustering results 
 
 ```{r}
 house_prices %>% 
@@ -218,7 +218,7 @@ house_prices %>%
 
 ```
 
-The hierarchical clustering has identify the same trend as the kmeans clustering - areas in and around London have experienced the largest increases in house prices since 2008. It's interesting that both methods of clustering identified that Cambridge has experienced a 'London-like' pattern in its house price increases since 2008.  
+The hierarchical clustering has identify the same trend as the k-means clustering - areas in and around London have experienced the largest increases in house prices since 2008. It's interesting that both methods of clustering identified that Cambridge has experienced a 'London-like' pattern in its house price increases since 2008.  
 
 ```{r}
 
